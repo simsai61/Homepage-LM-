@@ -22,7 +22,9 @@ import { WhatsAppIcon } from "./ContactPills";
 import { FullLogo } from "./FullLogo";
 import { loadBrandFonts } from "./fonts";
 
-export const STORY_DURATION = 435;
+// Ablauf (30 fps): S1 Blitz 0-70 · S2 Ansage 70-190 · S3 Klartext 190-295 ·
+// S4 Nummer 295-415 · S5 Absender & Blackout 415-495. Loop-Naht: 488-495 = 0-7.
+export const STORY_DURATION = 495;
 export const STORY_WIDTH = 1080;
 export const STORY_HEIGHT = 1920;
 export const STORY_FPS = 30;
@@ -74,17 +76,17 @@ const logoLitAt = (frame: number): number =>
     [44, 1],
   ]);
 
-// Blackout am Schluss: Stufen-Kollaps 415-418, Halb-Aufblitzen bei 419, dann aus.
+// Blackout am Schluss: Stufen-Kollaps 475-478, Halb-Aufblitzen bei 479, dann aus.
 const powerAt = (frame: number): number =>
-  frame < 415
+  frame < 475
     ? 1
     : stepAt(frame, [
-        [415, 0.55],
-        [416, 0.3],
-        [417, 0.15],
-        [418, 0.05],
-        [419, 0.45],
-        [420, 0],
+        [475, 0.55],
+        [476, 0.3],
+        [477, 0.15],
+        [478, 0.05],
+        [479, 0.45],
+        [480, 0],
       ]);
 
 const mono = (size: number, ls = "0.25em"): React.CSSProperties => ({
@@ -102,23 +104,23 @@ const heading = (size: number, weight = 600): React.CSSProperties => ({
   lineHeight: 1.08,
 });
 
-// ---------- Szene 2: Die Ansage ----------
+// ---------- Szene 2: Die Ansage (70-190) ----------
 const SceneAnsage: React.FC<{ frame: number }> = ({ frame }) => {
   const { fps } = useVideoConfig();
   const rise = (from: number) =>
     spring({ frame: frame - from, fps, config: { damping: 16 }, durationInFrames: 24 });
   const label = "KURZ GESAGT:";
-  const chars = Math.floor(interpolate(frame, [78, 86], [0, label.length], {
+  const chars = Math.floor(interpolate(frame, [78, 88], [0, label.length], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   }));
-  const r1 = rise(88);
-  const r2 = rise(94);
-  const subIn = interpolate(frame, [94, 104], [0, 1], {
+  const r1 = rise(90);
+  const r2 = rise(98);
+  const subIn = interpolate(frame, [106, 116], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
-  const shimmerX = interpolate(frame, [100, 132], [-160, 680], {
+  const shimmerX = interpolate(frame, [112, 148], [-160, 680], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
@@ -212,25 +214,57 @@ const SceneAnsage: React.FC<{ frame: number }> = ({ frame }) => {
   );
 };
 
-// ---------- Szene 3: Klartext ----------
+// Wort mit pinker Durchstreichung — „geht gerade nicht".
+const Struck: React.FC<{
+  word: string;
+  strikeFrom: number;
+  frame: number;
+}> = ({ word, strikeFrom, frame }) => {
+  const strike = interpolate(frame, [strikeFrom, strikeFrom + 10], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: (t) => 1 - (1 - t) * (1 - t),
+  });
+  return (
+    <span style={{ position: "relative", display: "inline-block" }}>
+      {word}
+      <span
+        style={{
+          position: "absolute",
+          left: -8,
+          right: -8,
+          top: "52%",
+          height: 5,
+          background: BRAND.glow,
+          opacity: 0.85,
+          transform: `scaleX(${strike})`,
+          transformOrigin: "left",
+          boxShadow: "0 0 14px rgba(232,98,143,.5)",
+        }}
+      />
+    </span>
+  );
+};
+
+// ---------- Szene 3: Klartext (190-295) ----------
 const SceneKlartext: React.FC<{ frame: number }> = ({ frame }) => {
   const { fps } = useVideoConfig();
-  const wipe = interpolate(frame, [160, 168], [100, 0], {
+  const wipe = interpolate(frame, [190, 200], [100, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
   const rise = (from: number) =>
     spring({ frame: frame - from, fps, config: { damping: 16 }, durationInFrames: 24 });
-  const r1 = rise(172);
-  const r2 = rise(178);
-  const underline = interpolate(frame, [186, 200], [0, 1], {
+  const r1 = rise(204);
+  const r2 = rise(212);
+  const subIn = interpolate(frame, [230, 242], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  const underline = interpolate(frame, [240, 254], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: (t) => 1 - (1 - t) * (1 - t),
-  });
-  const subIn = interpolate(frame, [196, 206], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
   });
 
   return (
@@ -240,103 +274,107 @@ const SceneKlartext: React.FC<{ frame: number }> = ({ frame }) => {
         clipPath: `inset(${wipe}% 0 0 0)`,
       }}
     >
-      <div style={{ position: "absolute", left: 120, right: 120, top: 660 }}>
-        {frame >= 168 ? (
+      <div style={{ position: "absolute", left: 120, right: 120, top: 640 }}>
+        {frame >= 200 ? (
           <div style={{ ...mono(32), color: BRAND.glow }}>
-            WEBSITE &amp; E-MAIL KURZ OFFLINE
+            WÄHREND DES UMZUGS
           </div>
         ) : (
           <div style={{ minHeight: 42 }} />
         )}
-        <div style={{ marginTop: 44, overflow: "hidden" }}>
+        <div style={{ marginTop: 44, overflow: "hidden", paddingBottom: 6 }}>
           <div
             style={{
-              ...heading(88),
+              ...heading(84),
               color: BRAND.text,
               transform: `translateY(${(1 - r1) * 80}px)`,
               opacity: r1,
+              whiteSpace: "nowrap",
             }}
           >
-            Bis dahin:
+            <Struck word="E-Mail" strikeFrom={218} frame={frame} /> geht nicht.
           </div>
         </div>
         <div style={{ overflow: "hidden", paddingBottom: 14 }}>
           <div
             style={{
-              ...heading(88),
+              ...heading(84),
               color: BRAND.text,
               transform: `translateY(${(1 - r2) * 80}px)`,
               opacity: r2,
+              whiteSpace: "nowrap",
             }}
           >
-            <span style={{ position: "relative", display: "inline-block" }}>
-              WhatsApp
-              <span
-                style={{
-                  position: "absolute",
-                  left: 0,
-                  bottom: -10,
-                  width: "100%",
-                  height: 6,
-                  background: BRAND.whatsapp,
-                  transform: `scaleX(${underline})`,
-                  transformOrigin: "left",
-                }}
-              />
-            </span>{" "}
-            oder Telefon.
+            <Struck word="Website" strikeFrom={226} frame={frame} /> geht nicht.
           </div>
         </div>
         <div
           style={{
-            marginTop: 40,
+            marginTop: 44,
             fontFamily: `'${FONT_BODY}', sans-serif`,
-            fontSize: 40,
-            color: BRAND.muted,
+            fontSize: 44,
+            fontWeight: 500,
+            color: BRAND.text,
             opacity: subIn,
             transform: `translateY(${(1 - subIn) * 8}px)`,
           }}
         >
-          Sie bekommen mich. Kein Callcenter.
+          Bis dahin:{" "}
+          <span style={{ position: "relative", display: "inline-block" }}>
+            WhatsApp
+            <span
+              style={{
+                position: "absolute",
+                left: 0,
+                bottom: -8,
+                width: "100%",
+                height: 5,
+                background: BRAND.whatsapp,
+                transform: `scaleX(${underline})`,
+                transformOrigin: "left",
+              }}
+            />
+          </span>{" "}
+          oder Telefon.
         </div>
       </div>
     </AbsoluteFill>
   );
 };
 
-// ---------- Szene 4: Die Nummer ----------
+// ---------- Szene 4: Die Nummer (295-415) ----------
 const NUMBER_BLOCKS: Array<{ text: string; at: number; line: 0 | 1 }> = [
-  { text: "+43", at: 252, line: 0 },
-  { text: "664", at: 256, line: 0 },
-  { text: "372", at: 260, line: 1 },
-  { text: "48 08", at: 264, line: 1 },
+  { text: "+43", at: 312, line: 0 },
+  { text: "664", at: 316, line: 0 },
+  { text: "372", at: 320, line: 1 },
+  { text: "48 08", at: 324, line: 1 },
 ];
 
 const SceneNummer: React.FC<{ frame: number }> = ({ frame }) => {
   const label = "WHATSAPP ZUERST · ANRUFEN GEHT AUCH";
-  const chars = Math.floor(interpolate(frame, [238, 250], [0, label.length], {
+  const chars = Math.floor(interpolate(frame, [298, 310], [0, label.length], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   }));
   const pillLit = stepAt(frame, [
-    [244, 1],
-    [246, 0.25],
-    [248, 1],
+    [304, 1],
+    [306, 0.25],
+    [308, 1],
   ]);
-  // Merk-dir-das-Puls auf der Nummer (275-287), danach Ruhe.
-  const pulse = interpolate(frame, [275, 281, 287], [0, 0.55, 0], {
+  // Merk-dir-das-Puls auf der Nummer (335-347), danach Ruhe.
+  const pulse = interpolate(frame, [335, 341, 347], [0, 0.55, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
-  const subIn = interpolate(frame, [280, 292], [0, 1], {
+  const subIn = interpolate(frame, [340, 352], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
-  // Sanfter Tipp-mich-Impuls der Sprechblase bei Frame 300 und 330.
+  // Sanfter Tipp-mich-Impuls der Sprechblase bei Frame 360 und 390.
   const glyphPulse =
-    0.06 * Math.sin(Math.PI * clamp01((frame - 300) / 14)) +
-    0.06 * Math.sin(Math.PI * clamp01((frame - 330) / 14));
-  const fadeOut = interpolate(frame, [350, 358], [1, 0], {
+    0.06 * Math.sin(Math.PI * clamp01((frame - 360) / 14)) +
+    0.06 * Math.sin(Math.PI * clamp01((frame - 390) / 14));
+  const fadeOut = interpolate(frame, [410, 418], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
@@ -427,17 +465,17 @@ const SceneNummer: React.FC<{ frame: number }> = ({ frame }) => {
   );
 };
 
-// ---------- Szene 5: Absender & Claim ----------
+// ---------- Szene 5: Absender & Claim (415-495) ----------
 const SceneAbsender: React.FC<{ frame: number }> = ({ frame }) => {
   const power = powerAt(frame);
   const claimLit = stepAt(frame, [
-    [374, 0.85],
-    [376, 0.2],
-    [378, 1],
-    [380, 0.45],
-    [382, 1],
+    [434, 0.85],
+    [436, 0.2],
+    [438, 1],
+    [440, 0.45],
+    [442, 1],
   ]);
-  const handleIn = interpolate(frame, [388, 398], [0, 1], {
+  const handleIn = interpolate(frame, [448, 458], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
@@ -488,7 +526,7 @@ export const StoryVideo: React.FC = () => {
     loadBrandFonts().then(() => continueRender(fontHandle));
   }, [fontHandle]);
 
-  // Logo-Fahrt: Mitte → oben angedockt (70-90) → zurück zur Mitte (355-372).
+  // Logo-Fahrt: Mitte → oben angedockt (70-90) → zurück zur Mitte (415-432).
   const dockIn = spring({
     frame: frame - 70,
     fps,
@@ -496,20 +534,20 @@ export const StoryVideo: React.FC = () => {
     durationInFrames: 26,
   });
   const dockOut = spring({
-    frame: frame - 355,
+    frame: frame - 415,
     fps,
     config: { damping: 15 },
     durationInFrames: 26,
   });
-  // Ab Frame 410 hart auf 0, damit die Loop-Naht (428-435 = 0-7) pixelgenau ist.
-  const dock = frame < 70 ? 0 : frame >= 410 ? 0 : dockIn * (1 - dockOut);
+  // Ab Frame 470 hart auf 0, damit die Loop-Naht (488-495 = 0-7) pixelgenau ist.
+  const dock = frame < 70 ? 0 : frame >= 470 ? 0 : dockIn * (1 - dockOut);
   const logoScale = 1 - (1 - DOCK_SCALE) * dock;
   const logoShift = DOCK_SHIFT * dock;
 
   const lit = logoLitAt(frame) * powerAt(frame);
-  // Glow-Atmen im stabilen Betrieb (44-415), sonst statisch.
+  // Glow-Atmen im stabilen Betrieb (44-475), sonst statisch.
   const breathe =
-    frame >= 44 && frame < 415
+    frame >= 44 && frame < 475
       ? 1 + 0.08 * Math.sin(((frame - 44) / 90) * Math.PI * 2)
       : 1;
   const logoGlow =
@@ -550,21 +588,21 @@ export const StoryVideo: React.FC = () => {
       extrapolateRight: "clamp",
     });
 
-  // Restglut des Signets nach dem Blackout (419-427).
-  const ember = interpolate(frame, [419, 427], [0.8, 0], {
+  // Restglut des Signets nach dem Blackout (479-487).
+  const ember = interpolate(frame, [479, 487], [0.8, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
-  const emberVisible = frame >= 419 && frame < 427;
+  const emberVisible = frame >= 479 && frame < 487;
 
   return (
     <AbsoluteFill style={{ background: BRAND.bg }}>
       <AbsoluteFill style={{ transform: `translate(${shakeX}px, ${shakeY}px)` }}>
         {/* Szenen-Inhalte unter dem Logo-Schild */}
-        {frame >= 70 && frame < 168 ? <SceneAnsage frame={frame} /> : null}
-        {frame >= 160 && frame < 235 ? <SceneKlartext frame={frame} /> : null}
-        {frame >= 235 && frame < 358 ? <SceneNummer frame={frame} /> : null}
-        {frame >= 372 ? <SceneAbsender frame={frame} /> : null}
+        {frame >= 70 && frame < 202 ? <SceneAnsage frame={frame} /> : null}
+        {frame >= 190 && frame < 295 ? <SceneKlartext frame={frame} /> : null}
+        {frame >= 295 && frame < 419 ? <SceneNummer frame={frame} /> : null}
+        {frame >= 432 ? <SceneAbsender frame={frame} /> : null}
 
         {/* Das Logo-Schild — läuft als eine durchgehende Ebene durch alle Szenen */}
         <div
