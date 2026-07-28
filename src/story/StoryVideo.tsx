@@ -114,11 +114,11 @@ const SceneAnsage: React.FC<{ frame: number }> = ({ frame }) => {
   }));
   const r1 = rise(88);
   const r2 = rise(94);
-  const subIn = interpolate(frame, [102, 112], [0, 1], {
+  const subIn = interpolate(frame, [94, 104], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
-  const shimmerX = interpolate(frame, [108, 140], [-160, 680], {
+  const shimmerX = interpolate(frame, [100, 132], [-160, 680], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
@@ -126,7 +126,7 @@ const SceneAnsage: React.FC<{ frame: number }> = ({ frame }) => {
 
   return (
     <div style={{ position: "absolute", left: 120, right: 120, top: 660 }}>
-      <div style={{ ...mono(34, "0.35em"), color: BRAND.peach, minHeight: 44 }}>
+      <div style={{ ...mono(34, "0.35em"), color: BRAND.glow, minHeight: 44 }}>
         {label.slice(0, chars)}
       </div>
       <div style={{ marginTop: 44, overflow: "hidden" }}>
@@ -180,7 +180,7 @@ const SceneAnsage: React.FC<{ frame: number }> = ({ frame }) => {
               height: 38,
               marginLeft: 16,
               verticalAlign: "-4px",
-              background: BRAND.peach,
+              background: BRAND.glow,
               opacity: cursorOn ? 1 : 0,
             }}
           />
@@ -369,7 +369,7 @@ const SceneNummer: React.FC<{ frame: number }> = ({ frame }) => {
           alignItems: "center",
         }}
       >
-        <div style={{ ...mono(28), color: BRAND.muted, minHeight: 38 }}>
+        <div style={{ ...mono(28), color: BRAND.glow, minHeight: 38 }}>
           {label.slice(0, chars)}
         </div>
         <div
@@ -461,7 +461,7 @@ const SceneAbsender: React.FC<{ frame: number }> = ({ frame }) => {
           color: BRAND.text,
           opacity: claimLit * power,
           textShadow:
-            "0 0 34px rgba(242,166,90,.6), 0 0 78px rgba(232,98,143,.32)",
+            "0 0 34px rgba(242,166,90,.55), 0 0 70px rgba(232,98,143,.5)",
         }}
       >
         {CLAIM}
@@ -514,7 +514,7 @@ export const StoryVideo: React.FC = () => {
       : 1;
   const logoGlow =
     lit > 0
-      ? `drop-shadow(0 0 ${18 * breathe * lit}px rgba(242,166,90,${0.65 * lit})) drop-shadow(0 0 ${46 * breathe * lit}px rgba(232,98,143,${0.35 * lit}))`
+      ? `drop-shadow(0 0 ${18 * breathe * lit}px rgba(242,166,90,${0.65 * lit})) drop-shadow(0 0 ${52 * breathe * lit}px rgba(232,98,143,${0.5 * lit}))`
       : "none";
 
   // Blitzeinschlag (Frames 8-10) und Vollbild-Flash (10-13) mit Screen-Shake.
