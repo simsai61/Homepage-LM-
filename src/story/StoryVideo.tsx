@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import {
   AbsoluteFill,
+  Audio,
   continueRender,
   delayRender,
   interpolate,
   spring,
+  staticFile,
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
@@ -559,6 +561,8 @@ export const StoryVideo: React.FC = () => {
 
   return (
     <AbsoluteFill style={{ background: BRAND.bg }}>
+      {/* Framegenau synthetisiertes Sound-Design, siehe scripts/generate_sound.py */}
+      <Audio src={staticFile("audio/story-sound.wav")} />
       <AbsoluteFill style={{ transform: `translate(${shakeX}px, ${shakeY}px)` }}>
         {/* Szenen-Inhalte unter dem Logo-Schild */}
         {frame >= 70 && frame < 202 ? <SceneAnsage frame={frame} /> : null}
