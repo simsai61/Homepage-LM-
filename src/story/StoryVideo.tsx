@@ -109,7 +109,7 @@ const SceneAnsage: React.FC<{ frame: number }> = ({ frame }) => {
   const { fps } = useVideoConfig();
   const rise = (from: number) =>
     spring({ frame: frame - from, fps, config: { damping: 16 }, durationInFrames: 24 });
-  const label = "KURZ GESAGT:";
+  const label = "UPGRADE LÄUFT";
   const chars = Math.floor(interpolate(frame, [78, 88], [0, label.length], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
@@ -142,7 +142,7 @@ const SceneAnsage: React.FC<{ frame: number }> = ({ frame }) => {
             whiteSpace: "nowrap",
           }}
         >
-          Wir machen unsere
+          Wir transferieren
         </div>
       </div>
       <div style={{ overflow: "hidden" }}>
@@ -156,7 +156,7 @@ const SceneAnsage: React.FC<{ frame: number }> = ({ frame }) => {
             whiteSpace: "nowrap",
           }}
         >
-          Homepage neu.
+          unsere Homepage.
         </div>
       </div>
       <div
@@ -174,7 +174,7 @@ const SceneAnsage: React.FC<{ frame: number }> = ({ frame }) => {
             whiteSpace: "nowrap",
           }}
         >
-          {CONTACT.domain} übersiedelt gerade.
+          {CONTACT.domain} bekommt ein Upgrade.
           <span
             style={{
               display: "inline-block",
@@ -214,39 +214,9 @@ const SceneAnsage: React.FC<{ frame: number }> = ({ frame }) => {
   );
 };
 
-// Wort mit pinker Durchstreichung — „geht gerade nicht".
-const Struck: React.FC<{
-  word: string;
-  strikeFrom: number;
-  frame: number;
-}> = ({ word, strikeFrom, frame }) => {
-  const strike = interpolate(frame, [strikeFrom, strikeFrom + 10], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-    easing: (t) => 1 - (1 - t) * (1 - t),
-  });
-  return (
-    <span style={{ position: "relative", display: "inline-block" }}>
-      {word}
-      <span
-        style={{
-          position: "absolute",
-          left: -8,
-          right: -8,
-          top: "52%",
-          height: 5,
-          background: BRAND.glow,
-          opacity: 0.85,
-          transform: `scaleX(${strike})`,
-          transformOrigin: "left",
-          boxShadow: "0 0 14px rgba(232,98,143,.5)",
-        }}
-      />
-    </span>
-  );
-};
-
-// ---------- Szene 3: Klartext (190-295) ----------
+// ---------- Szene 3: Status-Paar (190-295) ----------
+// Zwei Zustände wie am Sicherungskasten: die tote Röhre (Offline, gedimmt)
+// und die lebendige (WhatsApp und Telefon, leuchtend).
 const SceneKlartext: React.FC<{ frame: number }> = ({ frame }) => {
   const { fps } = useVideoConfig();
   const wipe = interpolate(frame, [190, 200], [100, 0], {
@@ -256,12 +226,8 @@ const SceneKlartext: React.FC<{ frame: number }> = ({ frame }) => {
   const rise = (from: number) =>
     spring({ frame: frame - from, fps, config: { damping: 16 }, durationInFrames: 24 });
   const r1 = rise(204);
-  const r2 = rise(212);
-  const subIn = interpolate(frame, [230, 242], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-  const underline = interpolate(frame, [240, 254], [0, 1], {
+  const r2 = rise(228);
+  const underline = interpolate(frame, [244, 258], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: (t) => 1 - (1 - t) * (1 - t),
@@ -274,68 +240,64 @@ const SceneKlartext: React.FC<{ frame: number }> = ({ frame }) => {
         clipPath: `inset(${wipe}% 0 0 0)`,
       }}
     >
-      <div style={{ position: "absolute", left: 120, right: 120, top: 640 }}>
+      <div style={{ position: "absolute", left: 120, right: 120, top: 620 }}>
         {frame >= 200 ? (
-          <div style={{ ...mono(32), color: BRAND.glow }}>
-            WÄHREND DES UMZUGS
+          <div style={{ ...mono(30), color: BRAND.muted }}>
+            E-MAIL UND WEBSITE
           </div>
         ) : (
-          <div style={{ minHeight: 42 }} />
+          <div style={{ minHeight: 40 }} />
         )}
-        <div style={{ marginTop: 44, overflow: "hidden", paddingBottom: 6 }}>
+        <div style={{ marginTop: 24, overflow: "hidden", paddingBottom: 6 }}>
           <div
             style={{
-              ...heading(84),
-              color: BRAND.text,
+              ...heading(88),
+              color: BRAND.muted,
               transform: `translateY(${(1 - r1) * 80}px)`,
-              opacity: r1,
+              opacity: r1 * 0.85,
               whiteSpace: "nowrap",
             }}
           >
-            <Struck word="E-Mail" strikeFrom={218} frame={frame} /> geht nicht.
+            Offline.
           </div>
         </div>
-        <div style={{ overflow: "hidden", paddingBottom: 14 }}>
+        <div style={{ marginTop: 64 }}>
+          {frame >= 224 ? (
+            <div style={{ ...mono(30), color: BRAND.glow }}>
+              ERREICHBAR ÜBER
+            </div>
+          ) : (
+            <div style={{ minHeight: 40 }} />
+          )}
+        </div>
+        <div style={{ marginTop: 24, overflow: "hidden", paddingBottom: 16 }}>
           <div
             style={{
-              ...heading(84),
+              ...heading(76),
               color: BRAND.text,
+              textShadow: "0 0 36px rgba(232,98,143,.3)",
               transform: `translateY(${(1 - r2) * 80}px)`,
               opacity: r2,
               whiteSpace: "nowrap",
             }}
           >
-            <Struck word="Website" strikeFrom={226} frame={frame} /> geht nicht.
+            <span style={{ position: "relative", display: "inline-block" }}>
+              WhatsApp
+              <span
+                style={{
+                  position: "absolute",
+                  left: 0,
+                  bottom: -10,
+                  width: "100%",
+                  height: 6,
+                  background: BRAND.whatsapp,
+                  transform: `scaleX(${underline})`,
+                  transformOrigin: "left",
+                }}
+              />
+            </span>{" "}
+            und Telefon.
           </div>
-        </div>
-        <div
-          style={{
-            marginTop: 44,
-            fontFamily: `'${FONT_BODY}', sans-serif`,
-            fontSize: 44,
-            fontWeight: 500,
-            color: BRAND.text,
-            opacity: subIn,
-            transform: `translateY(${(1 - subIn) * 8}px)`,
-          }}
-        >
-          Bis dahin:{" "}
-          <span style={{ position: "relative", display: "inline-block" }}>
-            WhatsApp
-            <span
-              style={{
-                position: "absolute",
-                left: 0,
-                bottom: -8,
-                width: "100%",
-                height: 5,
-                background: BRAND.whatsapp,
-                transform: `scaleX(${underline})`,
-                transformOrigin: "left",
-              }}
-            />
-          </span>{" "}
-          oder Telefon.
         </div>
       </div>
     </AbsoluteFill>
@@ -351,7 +313,7 @@ const NUMBER_BLOCKS: Array<{ text: string; at: number; line: 0 | 1 }> = [
 ];
 
 const SceneNummer: React.FC<{ frame: number }> = ({ frame }) => {
-  const label = "WHATSAPP ZUERST · ANRUFEN GEHT AUCH";
+  const label = "DER DIREKTE DRAHT";
   const chars = Math.floor(interpolate(frame, [298, 310], [0, label.length], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
