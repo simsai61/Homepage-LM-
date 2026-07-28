@@ -2,12 +2,27 @@ import "./index.css";
 import { Composition } from "remotion";
 import { HelloWorld, myCompSchema } from "./HelloWorld";
 import { Logo, myCompSchema2 } from "./HelloWorld/Logo";
+import {
+  STORY_DURATION,
+  STORY_FPS,
+  STORY_HEIGHT,
+  STORY_WIDTH,
+  StoryVideo,
+} from "./story/StoryVideo";
 
 // Each <Composition> is an entry in the sidebar!
 
 export const RemotionRoot: React.FC = () => {
   return (
     <>
+      <Composition
+        id="InstagramStory"
+        component={StoryVideo}
+        durationInFrames={STORY_DURATION}
+        fps={STORY_FPS}
+        width={STORY_WIDTH}
+        height={STORY_HEIGHT}
+      />
       <Composition
         // You can take the "id" to render a video:
         // npx remotion render HelloWorld
