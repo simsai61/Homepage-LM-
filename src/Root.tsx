@@ -1,6 +1,23 @@
 import "./index.css";
 import { Composition, Still } from "remotion";
+import { ComebackBild } from "./story/ComebackBild";
 import { UrlaubBild } from "./story/UrlaubBild";
+
+// Textvariante 3 („Akkus voll" + Homepage-Teaser) und 4 („Schild wieder an").
+const COMEBACK_AKKUS = {
+  kicker: "WIR SIND ZURÜCK",
+  zeile1: "AKKUS VOLL.",
+  zeile2: "ES GEHT LOS.",
+  abDatum: "Montag, 17.08.",
+  sub: "Und bald online: unsere neue Homepage.",
+};
+const COMEBACK_SCHILD = {
+  kicker: "DAS SCHILD IST WIEDER AN",
+  zeile1: "ZURÜCK AUS",
+  zeile2: "DEM URLAUB.",
+  abDatum: "Montag, 17.08.",
+  sub: "Der Laden läuft — es geht wieder los.",
+};
 import { HelloWorld, myCompSchema } from "./HelloWorld";
 import { Logo, myCompSchema2 } from "./HelloWorld/Logo";
 import {
@@ -37,6 +54,34 @@ export const RemotionRoot: React.FC = () => {
           jahr: "2026",
           zurueckTag: "Montag, 17.08.",
         }}
+      />
+      <Still
+        id="ComebackAkkusPost"
+        component={ComebackBild}
+        width={1080}
+        height={1350}
+        defaultProps={COMEBACK_AKKUS}
+      />
+      <Still
+        id="ComebackAkkusStory"
+        component={ComebackBild}
+        width={1080}
+        height={1920}
+        defaultProps={COMEBACK_AKKUS}
+      />
+      <Still
+        id="ComebackSchildPost"
+        component={ComebackBild}
+        width={1080}
+        height={1350}
+        defaultProps={COMEBACK_SCHILD}
+      />
+      <Still
+        id="ComebackSchildStory"
+        component={ComebackBild}
+        width={1080}
+        height={1920}
+        defaultProps={COMEBACK_SCHILD}
       />
       <Composition
         id="InstagramStory"
