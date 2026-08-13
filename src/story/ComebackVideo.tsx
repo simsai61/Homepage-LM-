@@ -30,7 +30,7 @@ import { loadBrandFonts } from "./fonts";
 export const COMEBACK_DURATION = 510;
 
 const AB_LABEL = "AB MONTAG";
-const AB_DATUM = "17.08.";
+const AB_DATUM = "17.08.2026";
 
 const LOGO_W = 880;
 const LOGO_RATIO = 97.23 / 324.66;
@@ -206,18 +206,16 @@ const SceneDatum: React.FC<{ frame: number }> = ({ frame }) => {
         )}
         <div
           style={{
-            ...heading(210, 700),
+            ...heading(165, 700),
             color: BRAND.peach,
             textShadow:
               "0 0 40px rgba(242,166,90,.55), 0 0 90px rgba(232,98,143,.4)",
             transform: `scale(${0.8 + 0.2 * settle})`,
             opacity: settle,
+            whiteSpace: "nowrap",
           }}
         >
           {AB_DATUM}
-        </div>
-        <div style={{ ...mono(30, "0.3em"), color: BRAND.muted, opacity: settle }}>
-          2026
         </div>
         <div
           style={{
