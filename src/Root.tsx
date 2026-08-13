@@ -1,5 +1,6 @@
 import "./index.css";
-import { Composition } from "remotion";
+import { Composition, Still } from "remotion";
+import { UrlaubBild } from "./story/UrlaubBild";
 import { HelloWorld, myCompSchema } from "./HelloWorld";
 import { Logo, myCompSchema2 } from "./HelloWorld/Logo";
 import {
@@ -15,6 +16,28 @@ import {
 export const RemotionRoot: React.FC = () => {
   return (
     <>
+      <Still
+        id="UrlaubPost"
+        component={UrlaubBild}
+        width={1080}
+        height={1350}
+        defaultProps={{
+          zeitraum: "31.07. — 14.08.",
+          jahr: "2026",
+          zurueckTag: "Montag, 17.08.",
+        }}
+      />
+      <Still
+        id="UrlaubStory"
+        component={UrlaubBild}
+        width={1080}
+        height={1920}
+        defaultProps={{
+          zeitraum: "31.07. — 14.08.",
+          jahr: "2026",
+          zurueckTag: "Montag, 17.08.",
+        }}
+      />
       <Composition
         id="InstagramStory"
         component={StoryVideo}
