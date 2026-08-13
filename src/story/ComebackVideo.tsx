@@ -25,9 +25,9 @@ import { FullLogo } from "./FullLogo";
 import { loadBrandFonts } from "./fonts";
 
 // Comeback-Video („Das Schild ist wieder an", Variante 4): S1 Blitz & Zünden
-// 0-70 · S2 Ansage 70-170 · S3 Datum 170-258 · S4 Nummer 258-332 ·
-// S5 leuchtender Schluss 332-390. Kein Blackout — das Schild bleibt an.
-export const COMEBACK_DURATION = 390;
+// 0-70 · S2 Ansage 70-200 · S3 Datum 200-320 · S4 Nummer 320-440 ·
+// S5 leuchtender Schluss 440-510. Kein Blackout — das Schild bleibt an.
+export const COMEBACK_DURATION = 510;
 
 const AB_LABEL = "AB MONTAG";
 const AB_DATUM = "17.08.";
@@ -82,7 +82,7 @@ const heading = (size: number, weight = 600): React.CSSProperties => ({
   lineHeight: 1.08,
 });
 
-// ---------- Szene 2: „Das Schild ist wieder an" (70-170) ----------
+// ---------- Szene 2: „Das Schild ist wieder an" (70-200) ----------
 const SceneAnsage: React.FC<{ frame: number }> = ({ frame }) => {
   const { fps } = useVideoConfig();
   const label = "DAS SCHILD IST WIEDER AN";
@@ -99,7 +99,7 @@ const SceneAnsage: React.FC<{ frame: number }> = ({ frame }) => {
     extrapolateRight: "clamp",
     easing: (t) => 1 - (1 - t) * (1 - t),
   });
-  const fadeOut = interpolate(frame, [162, 170], [1, 0], {
+  const fadeOut = interpolate(frame, [192, 200], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
@@ -167,20 +167,20 @@ const SceneAnsage: React.FC<{ frame: number }> = ({ frame }) => {
   );
 };
 
-// ---------- Szene 3: Das Datum (170-258) ----------
+// ---------- Szene 3: Das Datum (200-320) ----------
 const SceneDatum: React.FC<{ frame: number }> = ({ frame }) => {
   const { fps } = useVideoConfig();
   const settle = spring({
-    frame: frame - 178,
+    frame: frame - 208,
     fps,
     config: { damping: 13 },
     durationInFrames: 26,
   });
-  const subIn = interpolate(frame, [196, 208], [0, 1], {
+  const subIn = interpolate(frame, [226, 238], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
-  const fadeOut = interpolate(frame, [250, 258], [1, 0], {
+  const fadeOut = interpolate(frame, [312, 320], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
@@ -199,7 +199,7 @@ const SceneDatum: React.FC<{ frame: number }> = ({ frame }) => {
           gap: 30,
         }}
       >
-        {frame >= 174 ? (
+        {frame >= 204 ? (
           <div style={{ ...mono(32, "0.32em"), color: BRAND.glow }}>{AB_LABEL}</div>
         ) : (
           <div style={{ minHeight: 42 }} />
@@ -215,6 +215,9 @@ const SceneDatum: React.FC<{ frame: number }> = ({ frame }) => {
           }}
         >
           {AB_DATUM}
+        </div>
+        <div style={{ ...mono(30, "0.3em"), color: BRAND.muted, opacity: settle }}>
+          2026
         </div>
         <div
           style={{
@@ -232,30 +235,30 @@ const SceneDatum: React.FC<{ frame: number }> = ({ frame }) => {
   );
 };
 
-// ---------- Szene 4: Der direkte Draht (258-332) ----------
+// ---------- Szene 4: Der direkte Draht (320-440) ----------
 const NUMBER_BLOCKS: Array<{ text: string; at: number; line: 0 | 1 }> = [
-  { text: "+43", at: 276, line: 0 },
-  { text: "664", at: 280, line: 0 },
-  { text: "372", at: 284, line: 1 },
-  { text: "48 08", at: 288, line: 1 },
+  { text: "+43", at: 338, line: 0 },
+  { text: "664", at: 342, line: 0 },
+  { text: "372", at: 346, line: 1 },
+  { text: "48 08", at: 350, line: 1 },
 ];
 
 const SceneNummer: React.FC<{ frame: number }> = ({ frame }) => {
   const label = "DER DIREKTE DRAHT";
-  const chars = Math.floor(interpolate(frame, [262, 274], [0, label.length], {
+  const chars = Math.floor(interpolate(frame, [324, 336], [0, label.length], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   }));
   const pillLit = stepAt(frame, [
-    [266, 1],
-    [268, 0.25],
-    [270, 1],
+    [328, 1],
+    [330, 0.25],
+    [332, 1],
   ]);
-  const subIn = interpolate(frame, [296, 308], [0, 1], {
+  const subIn = interpolate(frame, [358, 370], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
-  const fadeOut = interpolate(frame, [324, 332], [1, 0], {
+  const fadeOut = interpolate(frame, [432, 440], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
@@ -344,16 +347,16 @@ const SceneNummer: React.FC<{ frame: number }> = ({ frame }) => {
   );
 };
 
-// ---------- Szene 5: Leuchtender Schluss (332-390) ----------
+// ---------- Szene 5: Leuchtender Schluss (440-510) ----------
 const SceneSchluss: React.FC<{ frame: number }> = ({ frame }) => {
   const claimLit = stepAt(frame, [
-    [348, 0.85],
-    [350, 0.2],
-    [352, 1],
-    [354, 0.45],
-    [356, 1],
+    [456, 0.85],
+    [458, 0.2],
+    [460, 1],
+    [462, 0.45],
+    [464, 1],
   ]);
-  const handleIn = interpolate(frame, [362, 372], [0, 1], {
+  const handleIn = interpolate(frame, [470, 480], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
@@ -398,7 +401,7 @@ export const ComebackVideo: React.FC = () => {
     loadBrandFonts().then(() => continueRender(fontHandle));
   }, [fontHandle]);
 
-  // Logo-Fahrt: Mitte → oben angedockt (50-70) → zurück zur Mitte (330-356).
+  // Logo-Fahrt: Mitte → oben angedockt (50-70) → zurück zur Mitte (438-464).
   const dockIn = spring({
     frame: frame - 50,
     fps,
@@ -406,12 +409,12 @@ export const ComebackVideo: React.FC = () => {
     durationInFrames: 26,
   });
   const dockOut = spring({
-    frame: frame - 330,
+    frame: frame - 438,
     fps,
     config: { damping: 15 },
     durationInFrames: 26,
   });
-  const dock = frame < 50 ? 0 : frame >= 378 ? 0 : dockIn * (1 - dockOut);
+  const dock = frame < 50 ? 0 : frame >= 498 ? 0 : dockIn * (1 - dockOut);
   const logoScale = 1 - (1 - DOCK_SCALE) * dock;
   const logoShift = DOCK_SHIFT * dock;
 
@@ -467,10 +470,10 @@ export const ComebackVideo: React.FC = () => {
         }}
       />
       <AbsoluteFill style={{ transform: `translate(${shakeX}px, ${shakeY}px)` }}>
-        {frame >= 70 && frame < 170 ? <SceneAnsage frame={frame} /> : null}
-        {frame >= 170 && frame < 258 ? <SceneDatum frame={frame} /> : null}
-        {frame >= 258 && frame < 332 ? <SceneNummer frame={frame} /> : null}
-        {frame >= 356 ? <SceneSchluss frame={frame} /> : null}
+        {frame >= 70 && frame < 200 ? <SceneAnsage frame={frame} /> : null}
+        {frame >= 200 && frame < 320 ? <SceneDatum frame={frame} /> : null}
+        {frame >= 320 && frame < 440 ? <SceneNummer frame={frame} /> : null}
+        {frame >= 450 ? <SceneSchluss frame={frame} /> : null}
 
         <div
           style={{

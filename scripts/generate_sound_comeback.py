@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Sound-Design für das Comeback-Video (390 Frames @ 30 fps = 13 s).
+"""Sound-Design für das Comeback-Video (510 Frames @ 30 fps = 17 s).
 
 Erzeugt public/audio/comeback-sound.wav — gleiche Klangwelt wie das
 Transfer-Video (scripts/generate_sound.py), aber ohne Power-Down:
@@ -8,14 +8,14 @@ das Schild bleibt am Ende an, der Ton läuft warm aus.
   f0-7     Stille, ab f4 aufsteigender Whoosh
   f8-13    Blitzeinschlag: Crack + Donner + Sub-Boom
   f14-44   Neon-Zündflackern (Buzz-Bursts auf den Leucht-Intervallen)
-  f44-378  Röhren-Grundbrummen, atmet im 3-s-Takt
-  f70-330  dunkles Synth-Bett mit Puls alle 16 Frames
-  f48/168/256  Szenen-Whooshes
-  f178     Datum landet: tiefer Snap
-  f266/270 WhatsApp-Pill: zwei Pops
-  f276-288 Nummern-Klacks
-  f348-356 Claim-Zündflackern
-  f378-390 warmer Ausklang (Fade, keine Abschaltung)
+  f44-498  Röhren-Grundbrummen, atmet im 3-s-Takt
+  f70-440  dunkles Synth-Bett mit Puls alle 16 Frames
+  f48/198/318  Szenen-Whooshes
+  f208     Datum landet: tiefer Snap
+  f328/332 WhatsApp-Pill: zwei Pops
+  f338-350 Nummern-Klacks
+  f456-464 Claim-Zündflackern
+  f498-510 warmer Ausklang (Fade, keine Abschaltung)
 """
 
 import wave
@@ -25,7 +25,7 @@ import numpy as np
 
 SR = 44100
 FPS = 30
-FRAMES = 390
+FRAMES = 510
 DUR = FRAMES / FPS
 N = int(SR * DUR)
 
@@ -149,7 +149,7 @@ for (a, b), power in zip(LIT_INTERVALS, LIT_POWER):
     add(tick, f2s(a), gain=0.10)
 
 # 3. Grundbrummen bis zum Schluss (kein Power-Down)
-hum_dur = f2s(378 - 44)
+hum_dur = f2s(498 - 44)
 hum_n = int(hum_dur * SR)
 t_hum = np.arange(hum_n) / SR
 hum = np.zeros(hum_n)
@@ -160,7 +160,7 @@ hum *= env_ar(hum_n, 0.4, 1.2)
 add(hum, f2s(44), gain=0.022)
 
 # 4. Synth-Bett
-bed_dur = f2s(330 - 70)
+bed_dur = f2s(440 - 70)
 bed_n = int(bed_dur * SR)
 t_bed = np.arange(bed_n) / SR
 
@@ -183,25 +183,25 @@ add(pad, f2s(70), gain=0.16)
 
 # 5. Szenen-Whooshes
 add(whoosh(0.45, 500, 1800), f2s(48), gain=0.16)
-add(whoosh(0.40, 300, 2400), f2s(168), gain=0.20)
-add(whoosh(0.30, 800, 2000), f2s(256), gain=0.14)
+add(whoosh(0.40, 300, 2400), f2s(198), gain=0.20)
+add(whoosh(0.30, 800, 2000), f2s(318), gain=0.14)
 
-# 6. Datum landet (f178): tiefer Snap + kurzer Glitzer
-add(pop(240, 90, 0.16), f2s(178), gain=0.55)
+# 6. Datum landet (f208): tiefer Snap + kurzer Glitzer
+add(pop(240, 90, 0.16), f2s(208), gain=0.55)
 shimmer = tone(1760, 0.35, [(1, 0.6), (1.5, 0.3), (2.0, 0.2)]) * env_ar(int(0.35 * SR), 0.004, 0.3)
-add(shimmer, f2s(180), gain=0.07)
+add(shimmer, f2s(210), gain=0.07)
 
 # 7. WhatsApp-Pill + Nummern-Klacks
-add(pop(620, 320, 0.07), f2s(266), gain=0.28)
-add(pop(680, 340, 0.09), f2s(270), gain=0.42)
-for i, fr in enumerate([276, 280, 284, 288]):
+add(pop(620, 320, 0.07), f2s(328), gain=0.28)
+add(pop(680, 340, 0.09), f2s(332), gain=0.42)
+for i, fr in enumerate([338, 342, 346, 350]):
     n = int(0.045 * SR)
     body = np.sin(2 * np.pi * (900 - i * 60) * np.arange(n) / SR)
     clack = (highpass(rng.standard_normal(n), 1200) * 0.7 + body * 0.5) * env_ar(n, 0.001, 0.035)
     add(clack, f2s(fr), gain=0.30, pan=(-0.25 + i * 0.17))
 
 # 8. Claim-Zündflackern
-for fr, dur, lvl in [(348, 2, 0.6), (352, 2, 0.75), (356, 4, 0.9)]:
+for fr, dur, lvl in [(456, 2, 0.6), (460, 2, 0.75), (464, 4, 0.9)]:
     add(neon_buzz(f2s(dur), lvl), f2s(fr), gain=0.13)
 
 # Master
