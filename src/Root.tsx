@@ -1,6 +1,7 @@
 import "./index.css";
 import { Composition, Still } from "remotion";
 import { ComebackBild } from "./story/ComebackBild";
+import { COMEBACK_DURATION, ComebackVideo } from "./story/ComebackVideo";
 import { UrlaubBild } from "./story/UrlaubBild";
 
 // Textvariante 3 („Akkus voll" + Homepage-Teaser) und 4 („Schild wieder an").
@@ -82,6 +83,14 @@ export const RemotionRoot: React.FC = () => {
         width={1080}
         height={1920}
         defaultProps={COMEBACK_SCHILD}
+      />
+      <Composition
+        id="ComebackVideo"
+        component={ComebackVideo}
+        durationInFrames={COMEBACK_DURATION}
+        fps={30}
+        width={1080}
+        height={1920}
       />
       <Composition
         id="InstagramStory"
